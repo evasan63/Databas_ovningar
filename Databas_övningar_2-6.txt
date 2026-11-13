@@ -1,0 +1,107 @@
+-- Databas övningar 2 - 6 --
+----------------------------
+
+Övning 2, Skapa databas som heter School:
+
+CREATE DATABASE School;
+GO
+
+USE School;
+GO
+
+-- Skapa tabell Students
+CREATE TABLE  Students
+(
+    SID int NOT NULL,
+    FName VARCHAR(20) NOT NULL,
+    LName VARCHAR(20) NOT NULL,
+    Comment Text NULL,
+    PRIMARY KEY (SID)
+);
+GO
+
+
+-- Lägg in studenter
+INSERT INTO Students (SID, FName, LName, Comment)
+VALUES (1, 'Stina', 'Andersson', 'H');
+
+INSERT INTO Students (SID, FName, LName, Comment)
+VALUES (2, 'Kalle', 'Svensson', 'A');
+
+INSERT INTO Students (SID, FName, LName, Comment)
+VALUES (3, 'Astrid', 'Ohlsson', 'C');
+
+INSERT INTO Students (SID, FName, LName, Comment)
+VALUES (2, 'Kalle', 'Svensson', 'A');
+
+INSERT INTO Students (SID, FName, LName, Comment)
+VALUES (3, 'Mark', 'Matsson', 'C');
+
+
+GO
+
+-- Test
+SELECT *
+FROM Students;
+
+----------------------------------------------------------------------------
+
+Övning 3, Svara kortfattat på varje fråga
+
+Lastbalsansering - innebär att fördela data trafik jämnt över flera servrar i ett kluster. Syftet är att förhindra att en enskild server blir överbelastad, vilket ger snabbare svarstider och högre tillgänglighet för applikationen.
+
+2. Konkret exempel - inom telekom behövs lastbalansering för att klara hög trafik och även tillförlitlighet genom att ha ett redundant system
+
+3. Tre fördelar med lastbalansering
+   - Ökad tillgänglighet (High Availability)
+   - Bättre prestanda och snabbare svarstider
+   - Enkel skalbarhet
+
+4. SQL Server replication - är en teknink för att kopiera och distribuera data och databasobjekt (såsom tabeller, vyer eller lagrade procedurer) från en databas (utgivare) till en annan (prenumerant) och sedan synkronisera ändringarna mellan dem
+
+5. SQL Server Mirroring - är en teknik för haveriberedskap (disaster recovery) och hög tillgänglighet (high availability) som omfattar två SQL Server-instanser på samma eller olika maskiner. Den ena SQL Server-instansen fungerar som en primär instans som kallas principal, medan den andra är en speglad instans som kallas mirror. I sällsynta fall kan det finnas en tredje SQL Server-instans som fungerar som ett vittne (witness)
+
+6. AlwaysOn Availability Groups - är en funktion i SQL Server (introducerad i SQL Server 2012) som maximerar tillgängligheten för en uppsättning användardatabaser för ett företag. Det fungerar som en heltäckande lösning för hög tillgänglighet (High Availability, HA) och katastrofåterställning (Disaster Recovery, DR)
+
+----------------------------------------------------------------------------
+
+Övning 4, Studera de olika ER-modellerna, https://www.tpointtech.com/dbms-er-model-concept
+
+----------------------------------------------------------------------------
+
+Övning 5, Skapa en lagrad procedur som hämtar alla studenter som heter 
+Mark eller Astrid, sortera I fallande ordning
+
+Create Procedure getStudents
+as
+select FName, LName 
+from Students
+where FName = 'Mark' or FName = 'Astrid'
+order by FName
+
+exec getStudents
+
+----------------------------------------------------------------------------
+
+Övning 6A, Skapa en lagrad procedur som tar en inparameter
+
+Create proc getStudentByFName
+@firstname varchar(10) = 'Stina'
+as
+select FName, LName
+from Students
+where FName = @firstname 
+
+exec getStudentByFName 'Kalle'
+
+Övning 6B, Skapa en lagrad procedur
+
+Create proc getStudentLNameP
+as
+select FName, LName
+from Students
+where LName like 'P%'
+
+exec getStudentLNameP
+
+----------------------------------------------------------------------------
