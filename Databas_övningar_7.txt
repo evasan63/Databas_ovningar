@@ -1,0 +1,141 @@
+-- Databas övningar 7, Triggers --
+------------------------
+
+
+CREATE DATABASE Test;
+GO
+
+USE Test;
+GO
+
+-- Skapa tabell Avdelning
+CREATE TABLE  testTrigger
+(
+    SID int NOT NULL,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL
+    PRIMARY KEY (SID)
+);
+GO
+
+
+-- Lägg in studenter
+INSERT INTO testTrigger (SID, FirstName, LastName)
+VALUES (1, 'Stina', 'Andersson');
+
+INSERT INTO testTrigger (SID, FirstName, astNamet)
+VALUES (2, 'Kalle', 'Svensson');
+
+INSERT INTO testTrigger (SID, FirstName, LastName)
+VALUES (3, 'Anna', 'Karlsson');
+
+INSERT INTO testTrigger (SID, FirstName, LastName)
+VALUES (4, 'Sture', 'Eriksson');
+
+GO
+
+-- Test
+SELECT *
+FROM testTrigger;
+
+SID	FirstName	LastName
+1	Stina	Andersson
+2	Kalle	Svensson
+3	Anna	Karlsson
+
+----------------------------------------------------------------
+
+-- Create trigger for INSERT
+create trigger testTriggerInsert
+on testTrigger
+for insert
+as
+Print 'En ny post har lagds in'
+select 'Ny post:', * from inserted
+select * from testTrigger
+
+
+-- Test trigger by inserting new value
+INSERT INTO testTrigger (SID, FirstName, LastName)
+VALUES (5, 'Kajsa', 'Warg');
+
+
+-- RESULT --
+(No column name)	SID	FirstName	LastName
+Ny post:	5	Kajsa	Warg
+
+
+-- Table after executing trigger
+SID	FirstName	LastName
+1	Stina	Andersson
+2	Kalle	Svensson
+3	Anna	Karlsson
+4	Sture	Eriksson
+5	Kajsa	Warg
+
+----------------------------------------------------------------
+
+-- Create trigger for UPDATE
+create trigger testTriggerModify
+on testTrigger
+for update
+as
+Print 'En post har uppdaterats'
+select 'Deleted: Den gamla datan var;', * from deleted
+select 'Inserted: Den nya datan är;', * from inserted
+select * from testTrigger
+
+-- Test trigger for UPDATE
+update testTrigger
+set LastName = 'Persson'
+where FirstName = 'Sture'
+
+
+-- RESULT --
+(No column name)	SID	FirstName	LastName
+Deleted: Den gamla datan var;	4	Sture	Eriksson
+
+(No column name)	SID	FirstName	LastName
+Inserted: Den nya datan är;	4	Sture	Persson
+
+-- Table after executing trigger
+SID	FirstName	LastName
+1	Stina	Andersson
+2	Kalle	Svensson
+3	Anna	Karlsson
+4	Sture	Persson
+5	Kajsa	Warg
+
+--------------------------------------------------------------
+
+
+-- Create trigger for INSTEAD OF
+create trigger testTriggerInsteadOf
+on testTrigger
+instead of insert
+as
+Print 'Du får inte lägga in nya poster'
+select * from testTrigger
+
+
+-- Test trigger for INSTEAD OF
+INSERT INTO testTrigger (SID, FirstName, LastName)
+VALUES (6, 'Bettan', 'Warg'); 
+
+
+-- RESULT --
+Du får inte lägga in nya poster
+
+(5 rows affected)
+
+(1 row affected)
+
+Completion time: 2026-11-16T10:17:51.7435110+01:00
+
+-- Table after executing trigger
+SID	FirstName	LastName
+1	Stina	Andersson
+2	Kalle	Svensson
+3	Anna	Karlsson
+4	Sture	Persson
+5	Kajsa	Warg
